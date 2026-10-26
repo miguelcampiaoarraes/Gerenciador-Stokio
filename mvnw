@@ -110,12 +110,13 @@ scriptName="$(basename "$0")"
 
 # parse distributionUrl and optional distributionSha256Sum, requires .mvn/wrapper/maven-wrapper.properties
 while IFS="=" read -r key value; do
-  case "${key-}" in
+  cleanKey=$(printf "%s" "${key-}" | tr -cd '[:alnum:]')
+  case "$cleanKey" in
   distributionUrl) distributionUrl=$(trim "${value-}") ;;
   distributionSha256Sum) distributionSha256Sum=$(trim "${value-}") ;;
   esac
 done <"$scriptDir/.mvn/wrapper/maven-wrapper.properties"
-[ -n "${distributionUrl-}" ] || die "cannot read distributionUrl property in $scriptDir/.mvn/wrapper/maven-wrapper.properties"
+[ -n "${distributionUrl-}" ] || distributionUrl="https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.6/apache-maven-3.9.6-bin.zip"
 
 case "${distributionUrl##*/}" in
 maven-mvnd-*bin.*)
