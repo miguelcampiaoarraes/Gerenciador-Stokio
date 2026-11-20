@@ -90,7 +90,7 @@ A aplicação expõe endpoints RESTful devidamente tipados e documentados via Sw
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/miguelarraes-a11y/Gerenciador-Stokio.git
+git clone https://github.com/miguelcampiaoarraes/Gerenciador-Stokio.git
 cd Gerenciador-Stokio
 ```
 
