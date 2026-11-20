@@ -1,112 +1,151 @@
+# Stokio — Sistema de Gestão Patrimonial e Agendamentos (FabLab SENAI)
 
-# Projeto: Aplicativo de Controle de Kits e Objetos do Fablab (SENAI)
+<div align="center">
 
-## Integrantes
+![Java](https://img.shields.io/badge/Java_17-0057FF?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3-161B22?style=for-the-badge&logo=springboot&logoColor=6DB33F)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-161B22?style=for-the-badge&logo=postgresql&logoColor=4169E1)
+![Swagger/OpenAPI](https://img.shields.io/badge/OpenAPI_3-161B22?style=for-the-badge&logo=swagger&logoColor=85EA2D)
+![Docker](https://img.shields.io/badge/Docker-161B22?style=for-the-badge&logo=docker&logoColor=2496ED)
+
+**Projeto Integrador — Curso Técnico em Desenvolvimento de Sistemas (SENAI Petrópolis)**
+
+</div>
+
+---
+
+## 📋 Visão Geral
+
+O **Stokio** é uma solução completa desenvolvida para solucionar os desafios de controle de inventário, empréstimo de insumos técnicos e reservas de espaço no **FabLab do SENAI Petrópolis**. 
+
+O sistema substitui planilhas descentralizadas por uma aplicação web robusta apoiada em **arquitetura em camadas (Spring Boot)** e persistência relacional **PostgreSQL**, oferecendo rastreabilidade de ponta a ponta de materiais, kits didáticos e equipamentos.
+
+### Equipe de Desenvolvimento
+- **Miguel Campião Arraes**
 - Benício Guimarães
 - Cauã França
 - Gustavo Justen
 - João Bernardo
-- Miguel Campião
-
-## Descrição
-O projeto consiste no desenvolvimento de um **aplicativo para controle de kits e objetos do Fablab (SENAI)**. A proposta é criar uma **interface interativa e prática**, facilitando a organização, o acompanhamento e o gerenciamento dos equipamentos disponíveis no laboratório.
-
-## Objetivo
-O objetivo do aplicativo é **melhorar o controle de empréstimos, localização e manutenção de kits e itens**, tornando o processo mais organizado e eficiente para os usuários e responsáveis pelo Fablab.
-
-## Funcionalidades
-
-### 1. Lista de Todos os Kits
-- Exibe todos os kits disponíveis no Fablab.
-- Permite visualizar rapidamente quais itens existem no laboratório.
-
-### 2. Lista de Empréstimos
-- Mostra **quem pegou determinado kit ou item**.
-- Ajuda no controle de uso e devolução dos equipamentos.
-
-### 3. Lista de Manutenção
-- Exibe **kits e itens que estão em manutenção**.
-- Facilita a identificação de equipamentos temporariamente indisponíveis.
-
-## Gerenciamento das Listas
-O usuário do aplicativo poderá **editar todas as listas**, permitindo:
-
-- Adicionar novos kits ou itens
-- Remover kits ou itens
-- Colocar kits ou itens em manutenção
-- Retirar kits ou itens da manutenção
-- Atualizar informações de empréstimo
-
-## Conclusão
-Com esse sistema, o Fablab poderá ter **maior organização e controle sobre seus equipamentos**, tornando o processo de uso mais eficiente, transparente e fácil de gerenciar.
 
 ---
 
-## Como Executar o Projeto (Compatibilidade Windows e Linux)
+## 🎯 Problema e Solução
 
-O sistema **STOKIO** é 100% compatível tanto com **Windows** quanto com **Linux** (e macOS), utilizando o Maven Wrapper incluído no repositório.
+| Cenário Anterior | Solução com o Stokio |
+| :--- | :--- |
+| Falta de visibilidade em tempo real dos itens disponíveis no laboratório. | Catálogo dinâmico de materiais e kits pedagógicos com controle de saldo de estoque. |
+| Incerteza sobre a posse e devolução de equipamentos emprestados. | Módulo dedicado de rastreamento de empréstimos com registro de datas e usuários responsáveis. |
+| Conflitos de horário no uso de bancadas e máquinas do laboratório. | Sistema de agendamento de espaços com aprovação e status configuráveis. |
+| Dificuldade no registro de avarias ou manutenções. | Gestão de danos e histórico de manutenções vinculados a cada item ou kit. |
+
+---
+
+## ⚙️ Arquitetura e Tecnologias
+
+O backend foi construído seguindo rigorosamente os padrões de mercado da engenharia de software Java:
+
+- **Linguagem & Plataforma:** Java 17 LTS
+- **Framework Principal:** Spring Boot 3
+- **Camada Web & REST:** Spring Web MVC (`@RestController`, Content Negotiation JSON)
+- **Persistência de Dados:** Spring Data JPA + Hibernate ORM
+- **Bancos de Dados:** PostgreSQL (ambiente de execução/produção) e H2 Database (execução de testes em memória)
+- **Documentação de API:** SpringDoc OpenAPI 3 / Swagger UI
+- **Gerenciador de Dependências & Build:** Apache Maven com Maven Wrapper (`mvnw`)
+- **Infraestrutura:** Docker (multi-stage build com Eclipse Temurin 17) e `render.yaml`
+
+### Estrutura de Camadas (Package Structure)
+```text
+com.senai.pi.stokio
+├── configs/         # Configurações globais (CORS, Swagger/OpenAPI, DataSeeder)
+├── controllers/     # Controladores REST expondo os endpoints HTTP
+├── models/          # Entidades de domínio JPA e regras de mapeamento ORM
+├── repositories/    # Interfaces Spring Data JPA com operações de banco
+├── services/        # Regras de negócio e validações da aplicação
+└── Application.java # Ponto de entrada (Main Spring Boot Application)
+```
+
+---
+
+## 📡 Principais Módulos da API REST
+
+A aplicação expõe endpoints RESTful devidamente tipados e documentados via Swagger:
+
+| Módulo | Entidade Principal | Operações Suportadas |
+| :--- | :--- | :--- |
+| **Materiais** | `Materiais`, `Categoria` | CRUD completo, controle de quantidade mínima, vínculo com categorias. |
+| **Kits Pedagógicos** | `Kit`, `KitItem` | Montagem e composição de kits didáticos para aulas práticas e oficinas. |
+| **Empréstimos** | `Emprestimo`, `EmprestimoKit` | Registro de saída, prazo de entrega, status de devolução e usuário associado. |
+| **Agendamentos** | `Agendamento`, `AgendamentoLaboratorio` | Solicitação e reserva de horários para utilização do FabLab. |
+| **Gestão de Danos** | `Danos` | Registro de avarias ocorridas durante aulas ou projetos para manutenção preventiva. |
+| **Usuários** | `Usuario` | Cadastro de alunos, instrutores e coordenadores do laboratório. |
+
+---
+
+## 🚀 Como Executar o Projeto Localmente
 
 ### Pré-requisitos
-- **Java JDK 17** ou superior instalado e configurado nas variáveis de ambiente (`JAVA_HOME` / `PATH`).
-- Navegador Web moderno (Google Chrome, Firefox, Edge, etc.).
+- **Java Development Kit (JDK) 17** ou superior instalado.
+- **Git** instalado.
+- Banco de dados **PostgreSQL** instalado (opcional, o projeto possui perfil de fallback com H2).
+
+### 1. Clonar o Repositório
+```bash
+git clone https://github.com/miguelarraes-a11y/Gerenciador-Stokio.git
+cd Gerenciador-Stokio
+```
+
+### 2. Configurar o Banco de Dados (PostgreSQL)
+Verifique as propriedades no arquivo `src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/stokio_db
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### 3. Executar com o Maven Wrapper
+
+#### No Windows (PowerShell / CMD):
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+#### No Linux / macOS:
+```bash
+chmod +x ./mvnw
+./mvnw spring-boot:run
+```
+
+### 4. Acessar a Documentação Interativa (Swagger)
+Com a aplicação em execução, acesse pelo navegador:
+```text
+http://localhost:8080/swagger-ui.html
+```
 
 ---
 
-### Execução no Windows
+## 🧪 Execução de Testes Automatizados
 
-1. Abra o terminal (PowerShell ou Prompt de Comando) na pasta raiz do projeto:
-   ```cmd
-   cd C:\caminho\para\projeto-integrador-main
-   ```
-2. Inicie a aplicação com o Maven Wrapper:
-   ```powershell
-   .\mvnw.cmd spring-boot:run
-   ```
-3. Abra no navegador:
-   ```text
-   http://localhost:8080
-   ```
-
-Para rodar os testes automatizados no Windows:
+O projeto conta com suite de testes com Spring Boot Starter Test e JUnit:
 ```powershell
 .\mvnw.cmd test
 ```
 
 ---
 
-### Execução no Linux / macOS
+## 🐳 Execução via Docker
 
-1. Abra o terminal no diretório do projeto:
-   ```bash
-   cd /caminho/para/projeto-integrador-main
-   ```
-2. Garanta permissão de execução ao script wrapper (caso clonado sem a flag de execução):
-   ```bash
-   chmod +x ./mvnw
-   ```
-3. Inicie a aplicação:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-4. Abra no navegador:
-   ```text
-   http://localhost:8080
-   ```
-
-Para rodar os testes automatizados no Linux:
+Para rodar em ambiente isolado via contêiner:
 ```bash
-./mvnw test
+# Construir a imagem Docker
+docker build -t stokio-api .
+
+# Executar o contêiner na porta 8080
+docker run -p 8080:8080 stokio-api
 ```
 
 ---
 
-## Perfis de Usuário e Credenciais Padrão (Ambiente de Testes)
-
-O banco de dados H2 em memória já inicia com usuários pré-configurados para validação de cada perfil:
-
-| Perfil | Nome | E-mail | Senha | Permissões Principais |
-| :--- | :--- | :--- | :--- | :--- |
-| **Administrador** | Administrador SENAI | `admin@stokio.senai.br` | `123456` | Acesso total: gestão de estoque, reposição, baixa, exclusão, criação/exclusão de kits, aprovação de solicitações de professores e alunos, gestão de usuários e permissões. |
-| **Professor** | Prof. Carlos Eduardo | `carlos.eduardo@senai.br` | `123456` | Visualiza estoque e kits; solicita empréstimo de materiais e kits; cria solicitações de kits pedagógicos (para aprovação do admin); realiza agendamentos; aprova/recusa solicitações de alunos sob sua responsabilidade. Não pode alterar estoque nem editar kits existentes. |
-| **Aluno** | Lucas Silva | `lucas.silva@aluno.senai.br` | `123456` | Visualiza kits disponíveis para empréstimo e horários de laboratório; solicita empréstimo de kit ou agendamento de espaço selecionando obrigatoriamente um professor responsável; aguarda aprovação. Não acessa estoque de materiais brutos nem funções administrativas. |
-
+<div align="center">
+Desenvolvido no âmbito do SENAI Petrópolis • 2026
+</div>
